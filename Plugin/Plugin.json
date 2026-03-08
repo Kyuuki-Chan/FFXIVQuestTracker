@@ -1,0 +1,13 @@
+{
+  "Author": "Kyuuki-Chan",
+  "Name": "FFXIV Quest Tracker",
+  "Punchline": "Suivez votre progression sur toutes les quêtes de FFXIV.",
+  "Description": "Affiche et exporte votre progression sur toutes les quêtes du jeu. Utilisez /questtracker pour ouvrir l'interface.",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "quest",
+    "tracker",
+    "progression",
+    "checklist"
+  ]
+}
