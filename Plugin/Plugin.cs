@@ -10,6 +10,7 @@ public sealed class Plugin : IDalamudPlugin
     private readonly ICommandManager commandManager;
     private readonly IPluginLog log;
     private readonly QuestService questService;
+    private readonly HttpServer httpServer;
 
 
     internal readonly IClientState ClientState;
@@ -34,6 +35,8 @@ public sealed class Plugin : IDalamudPlugin
         PlayerState = playerState;
         DataManager = dataManager;
         questService = new QuestService(dataManager, log);
+        httpServer = new HttpServer(questService, log);
+        httpServer.Start();
         var quests = questService.GetAllQuests();
         var completed = quests.Count(q => q.IsCompleted);
         log.Information($"Quêtes complétées : {completed} / {quests.Count}");
@@ -51,6 +54,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         commandManager.RemoveHandler(CommandName);
         log.Information("FFXIV Quest Tracker arrêté.");
+        httpServer.Dispose();
     }
 
     private void OnCommand(string command, string args)
