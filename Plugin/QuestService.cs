@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Dalamud.Plugin.Services;
 using FFXIVQuestTracker.Models;
 using Lumina.Excel.Sheets;
+using FFXIVClientStructs.FFXIV.Client.Game;
 
 namespace FFXIVQuestTracker;
 
@@ -61,7 +62,7 @@ public class QuestService
                 Expansion = expansionName,
                 Level = (byte)quest.ClassJobLevel[0],
                 // IsCompleted sera rempli plus tard via QuestManager
-                IsCompleted = false
+                IsCompleted = IsQuestCompleted(quest.RowId),
             });
         }
 
@@ -69,4 +70,13 @@ public class QuestService
 
         return result;
     }
+    /// <summary>
+    /// Vérifie si une quête est complétée par le joueur
+    /// </summary>
+    private static unsafe bool IsQuestCompleted(uint questId)
+    {
+        // QuestManager lit directement la mémoire du jeu
+        // Le mot clé "unsafe" est nécessaire pour accéder à la mémoire native
+        return QuestManager.IsQuestComplete((ushort)questId);
+}
 }

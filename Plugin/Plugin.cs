@@ -35,7 +35,8 @@ public sealed class Plugin : IDalamudPlugin
         DataManager = dataManager;
         questService = new QuestService(dataManager, log);
         var quests = questService.GetAllQuests();
-        log.Information($"Première quête : {quests.First().Name} - {quests.First().Expansion}");
+        var completed = quests.Count(q => q.IsCompleted);
+        log.Information($"Quêtes complétées : {completed} / {quests.Count}");
 
 
         commandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
