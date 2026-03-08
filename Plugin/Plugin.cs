@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using System.Linq;
 
 namespace FFXIVQuestTracker;
 
@@ -33,7 +34,8 @@ public sealed class Plugin : IDalamudPlugin
         PlayerState = playerState;
         DataManager = dataManager;
         questService = new QuestService(dataManager, log);
-        questService.LogQuestCount();
+        var quests = questService.GetAllQuests();
+        log.Information($"Première quête : {quests.First().Name} - {quests.First().Expansion}");
 
 
         commandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
