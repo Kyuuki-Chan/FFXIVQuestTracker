@@ -8,6 +8,8 @@ public sealed class Plugin : IDalamudPlugin
 {
     private readonly ICommandManager commandManager;
     private readonly IPluginLog log;
+    private readonly QuestService questService;
+
 
     internal readonly IClientState ClientState;
     internal readonly IPlayerState PlayerState;
@@ -30,6 +32,9 @@ public sealed class Plugin : IDalamudPlugin
         ClientState = clientState;
         PlayerState = playerState;
         DataManager = dataManager;
+        questService = new QuestService(dataManager, log);
+        questService.LogQuestCount();
+
 
         commandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
