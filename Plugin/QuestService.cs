@@ -25,6 +25,25 @@ public class QuestService
         { 4, "Endwalker" },
         { 5, "Dawntrail" }
     };
+    private static readonly Dictionary<string, string> JobAbbrevMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "GLD", "PLD" }, { "PAL", "PLD" },
+        { "MRD", "WAR" }, { "GUE", "WAR" },
+        { "DRK", "DRK" }, { "GNB", "GNB" },
+        { "CNJ", "WHM" }, { "MBL", "WHM" },
+        { "SCH", "SCH" }, { "ÉRU", "SCH" },
+        { "AST", "AST" }, { "SGE", "SGE" },
+        { "PGL", "MNK" }, { "MOI", "MNK" },
+        { "LNC", "DRG" }, { "CHE", "DRG" },
+        { "ROG", "NIN" }, { "NIN", "NIN" },
+        { "SAM", "SAM" }, { "RPR", "RPR" }, { "VPR", "VPR" },
+        { "ARC", "BRD" }, { "MCH", "MCH" }, { "DNC", "DNC" },
+        { "THM", "BLM" }, { "ACN", "SMN" },
+        { "RDM", "RDM" }, { "PCT", "PCT" }, { "BLU", "BLU" },
+        { "CRP","CRP"},{"BSM","BSM"},{"ARM","ARM"},{"GSM","GSM"},
+        { "LTW","LTW"},{"WVR","WVR"},{"ALC","ALC"},{"CUL","CUL"},
+        { "MIN","MIN"},{"BTN","BTN"},{"FSH","FSH"},
+    };
 
     public QuestService(IDataManager dataManager, IPluginLog log)
     {
@@ -65,10 +84,45 @@ public class QuestService
                 IsCompleted = IsQuestCompleted(quest.RowId),
             });
         }
+        // Zone
+        var zone = string.Empty;
+        try { zone = quest.IssuerLocation.Value.PlaceName.Value.Name.ToString(); } catch { }
+
+        // Job requis
+        var job = string.Empty;
+        try
+        {
+            var abbr = quest.ClassJobRequired.Value.Abbreviation.ToString();
+            if (!string.IsNullOrWhiteSpace(abbr) && abbr != "ADV")
+                job = JobAbbrevMap.TryGetValue(abbr, out var mapped) ? mapped : abbr.ToUpperInvariant();
+        }
+        catch { }
+
+        // NPC donneur
+        var npc = string.Empty;
+        try { npc = quest.IssuerStart.Value.Singular.ToString(); } catch { }
+
+        // URL Lodestone (FR, ID en hex)
+        var lodestoneUrl = $"https://fr.finalfantasyxiv.com/lodestone/playguide/db/quest/detail/?id={quest.RowId:x}";
+
+        result.Add(new QuestInfo
+        {
+            Id           = quest.RowId,
+            Name         = name,
+            Expansion    = expansionName,
+            Level        = (byte)quest.ClassJobLevel[0],
+            IsCompleted  = IsQuestCompleted(quest.RowId),
+            Zone         = zone,
+            Job          = job,
+            IssuerNpc    = npc,
+            LodestoneUrl = lodestoneUrl,
+        });
+
 
         log.Information($"Quêtes chargées : {result.Count} quêtes valides sur {questSheet.Count} entrées");
 
         return result;
+        
     }
     /// <summary>
     /// Vérifie si une quête est complétée par le joueur

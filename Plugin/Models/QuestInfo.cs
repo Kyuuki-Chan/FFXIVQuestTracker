@@ -22,4 +22,8 @@ public class QuestInfo
 
     // Est-ce que le joueur a complété cette quête ?
     public bool IsCompleted { get; set; }
+    public string Zone { get; set; } = string.Empty;
+    public string Job { get; set; } = string.Empty;
+    public string IssuerNpc { get; set; } = string.Empty;
+    public string LodestoneUrl { get; set; } = string.Empty;
 }
